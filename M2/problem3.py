@@ -8,6 +8,19 @@ def process_array(num, arr):
     print("\nProcessing Array({}): \n\n".format(num))
     print(arr)
     print("\nPositive Output:\n")
+    for x in arr:
+        if type(x) == int:
+            if x > 0:
+                print(x, end=" ")
+        elif type(x) == float:
+            if x > 0.0:
+                print("{:.4f}".format(x), end=" ")
+        elif type(x) == str:
+            if x.startswith("-"):
+                continue
+            else:
+                print(x, end=" ")
+        print("\n")
     # TODO add new code here to print the desired result
 
 

@@ -8,6 +8,7 @@ def process_array(num, arr):
     print("\nProcessing Array({}): \n\n".format(num))
     print(arr)
     print("\nOdds output:\n")
+    print([num for num in arr if num % 2 != 0])
     # TODO add necessary print statement to output only the odd values (hint, best if shown as a single line)
 
 
