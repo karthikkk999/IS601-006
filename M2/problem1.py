@@ -9,6 +9,7 @@ def process_array(num, arr):
     print(arr)
     print("\nOdds output:\n")
     # TODO add necessary print statement to output only the odd values (hint, best if shown as a single line)
+    # added code to iterate every num and skip those divisible by 2 (even)
     print([num for num in arr if num % 2 != 0])
 
 

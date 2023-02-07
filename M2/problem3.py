@@ -8,12 +8,13 @@ def process_array(num, arr):
     print(arr)
     print("\nPositive Output:\n")
     # TODO add new code here to print the desired result
+    #check the datatype of each element and convert to +ve using abs(value) 
     final_arr = []
     for value in arr:
         if type(value) == int or type(value) == float:
             final_arr.append(abs(value))
         elif type(value) == str:
-            final_arr.append(str(abs(int(value))))
+            final_arr.append(str(abs(int(value)))) #converted the datatype as original after making +ve 
     print(final_arr)
 
 
