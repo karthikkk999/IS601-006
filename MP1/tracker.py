@@ -89,6 +89,7 @@ def process_update(index):
     # consider index out of bounds scenarios and include appropriate message(s) for invalid index
     except IndexError:
         print("Invalid index. Please enter a valid index.")
+        return
     
     # show the existing value of each property where the TODOs are marked in the text of the inputs (replace the TODO related text)
     print(f"Updating task '{task['name']}'")
@@ -120,31 +121,36 @@ def update_task(index: int, name: str, description:str, due: str):
         return
     
     # update incoming task data if it's provided (if it's not provided use the original task property value)
+    if due:
+        try:
+            task['due'] = str_to_datetime(due.strip()) # due date must match one of the formats mentioned in str_to_datetime()
+        except ValueError:
+            print("Invalid Date format. The date should be in the format mm/dd/yy hh:mm:ss or yyyy-mm-dd hh:mm:ss")
+            return
     if name:
         task['name'] = name
     if description:
-        task['description'] = description
-    if due:
-        task['due'] = datetime.strptime(due, "%m/%d/%y %H:%M:%S")
+        task['description'] = description        
     
     # update lastActivity with the current datetime value
     task['lastActivity'] = datetime.now()
 
     # output that the task was updated if any items were changed, otherwise mention task was not updated
     if name or description or due:
-        print(f"Task with index {index} was updated.")
+        print(f"Task No. {index + 1} was updated.")
     else:
-        print(f"Task with index {index} was not updated.")
-
-    # make sure save() is still called last in this function
-
+        print(f"Task No. {index + 1} was not updated.")
+    
+    save()
     # UCID: sk3374
     # Date: Feb 16, 8:23 PM 
     # We first try to find the task with the given index. If it doesn't exist, we print an appropriate error message and return.
-    # We then update the task data with the incoming data if it was provided. We check if each property was provided, and if it was, we update the corresponding property of the task. If it wasn't provided, we use the original task property value.
+    # We then update the task data with the incoming data if it was provided. 
+    # We check if each property was provided, and if it was, we update the corresponding property of the task. 
+    # If it wasn't provided, we use the original task property value.
     # We update the lastActivity property of the task with the current datetime value.
     # We output a message indicating if the task was updated or not, depending on whether any items were changed.
-    save()
+    
 
 def mark_done(index):
     """ Updates a single task, via index, to a done datetime"""
@@ -153,23 +159,25 @@ def mark_done(index):
     try:
         task=tasks[index]
     except IndexError:
-        print(f"Task with index {index} does not exist.")
+        print("Invalid index. Please enter a valid index.")
         return
 
     # if it's not done, record the current datetime as the value
     if not task['done']:
-        task['done'] = True
+        task['done'] = datetime.now()
+        print(f"Task No. {index + 1} has been marked done.")
     # if it is done, print a message saying it's already completed
     else:        
-        print(f"Task with index {index} had been marked done already.")        
-    
+        print(f"Task No. {index + 1} had been marked done already.")        
+    save()
+
     # UCID: sk3374
     # Date: Feb 16, 8:35 PM
     # Solution: 
     # We first try to find the task with the given index. If it doesn't exist, we print an appropriate error message and return.
     # If the task exists and it has been already marked done, we send a message to the user saying its already marked done.
-    # Else, we mark it done
-    save()
+    # Else, we mark it done by storing the current date time.
+    
 
 def view_task(index):
     """ View more info about a specific task fetch by index """
@@ -178,7 +186,7 @@ def view_task(index):
     try:
         task=tasks[index]
     except IndexError:
-        print(f"Task with index {index} does not exist.")
+        print("Invalid index. Please enter a valid index.")
         return
 
     # utilize the given print statement when a task is found
@@ -205,7 +213,7 @@ def delete_task(index):
     try:
         task=tasks[index]
     except IndexError:
-        print(f"Task with index {index} does not exist.")
+        print("Invalid index. Please enter a valid index.")
         return
 
     try: 
