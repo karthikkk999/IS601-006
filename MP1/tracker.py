@@ -62,21 +62,24 @@ def add_task(name: str, description: str, due: str):
         task['due'] = str_to_datetime(due.strip()) # due date must match one of the formats mentioned in str_to_datetime()
     except ValueError:
         print("Invalid Date format. The date should be in the format mm/dd/yy hh:mm:ss or yyyy-mm-dd hh:mm:ss")
-        
+        return  
     task['lastActivity'] = datetime.now() # update lastActivity with the current datetime value
 
-    tasks.append(task)# add the new task to the tasks list
-    print("New task added to the tasklist sucessfully") # output a message confirming the new task was added or if the addition was rejected due to missing data    
-    # make sure save() is still called last in this function
-    # include your ucid and date as a comment of when you implemented this, briefly summarize the solution
+    try:
+        tasks.append(task)# add the new task to the tasks list
+        print("New task added to the tasklist sucessfully") # output a message confirming the new task was added or rejected    
+    except ValueError:
+        print("New task has not been added to the tasklist")
 
+    save()# make sure save() is still called last in this function
+
+    # include your ucid and date as a comment of when you implemented this, briefly summarize the solution
     # UCID: sk3374
     # Date: Feb 16, 7:32 PM
     # Solution: 
     # inserted the appropriates values into the dictionary using the relavent key
     # also removed the whitespaces leading and trailing whitespaces
     # and called str_to_datetime funtion to convert the string to date and then insert to lastActivity
-    save()
 
 def process_update(index):
     """ extracted the user input prompts to get task data then passes it to update_task() """

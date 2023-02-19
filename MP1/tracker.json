@@ -1,16 +1,9 @@
 [
     {
-        "name": "read",
-        "due": null,
-        "lastActivity": "2023-02-15 22:54:05.055122",
-        "description": "read a book",
-        "done": false
-    },
-    {
-        "name": "Play Valorant",
-        "due": "2023-01-01 01:01:23",
-        "lastActivity": "2023-02-17 20:40:08.326857",
-        "description": "I need to go Platinum",
+        "name": "Play",
+        "due": "2023-03-01 01:01:22",
+        "lastActivity": "2023-02-18 19:44:40.181536",
+        "description": "I need to Play video games",
         "done": false
     }
 ]
