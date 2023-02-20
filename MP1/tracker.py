@@ -230,14 +230,14 @@ def delete_task(index):
     
     # UCID: sk3374
     # Date: Feb 17, 7:47 pm 
-    # First we get the task by index. IF index invalid, let user know
-    # We delete the give task using pop. Also added error handling for this delete
+    # First we get the task by index. IF index invalid, we'll the let user know
+    # We delete the give task using pop. Also added error handling using try/except
+    # If the task has been (or has not been) deleted we will let use know using print statements
 
 def get_incomplete_tasks():
     """ prints a list of tasks that are not done """
     # generate a list of tasks where the task is not done
     # pass that list into list_tasks()
-    # include your ucid and date as a comment of when you implemented this, briefly summarize the solution
     _tasks = [task for task in tasks if not task["done"]]
     list_tasks(_tasks)
     # Include your ucid and date as a comment of when you implemented this, briefly summarize the solution
