@@ -240,17 +240,20 @@ def get_incomplete_tasks():
     # pass that list into list_tasks()
     _tasks = [task for task in tasks if not task["done"]]
     list_tasks(_tasks)
+
     # Include your ucid and date as a comment of when you implemented this, briefly summarize the solution
     # UCID: sk3374
     # Date: Feb 17, 7:55 pm
+    # Created a new list called _tasks. 
+    # Iterated through each task in the tasks list to see if its "done" property is False.
+    # Then  fetched all such tasks and stored them in _tasks.
     # got all the incomplete tasks whose done is not marked to true
-    # then displayed all those fetched tasks using list_tasks function
+    # then displayed all those fetched tasks using list_tasks function. If no taks display a prompt saying the same
 
 def get_overdue_tasks():
     """ prints a list of tasks that are over due completion (not done and expired) """
     # generate a list of tasks where the due date is older than now and that are not complete
     # pass that list into list_tasks()
-    # include your ucid and date as a comment of when you implemented this, briefly summarize the solution
     _tasks = [task for task in tasks if not task["done"] and str_to_datetime(str(task["due"])) < datetime.now()]
     list_tasks(_tasks)    
     # Include your ucid and date as a comment of when you implemented this, briefly summarize the solution
@@ -269,8 +272,9 @@ def get_time_remaining(index):
         print("Invalid index. Please enter a valid index.")
         return
     # get the days, hours, minutes, seconds between the due date and now
-    #due = datetime.strptime(task["due"], '%Y-%m-%d')
-    due = str_to_datetime(str(task["due"]))
+    
+    due = str_to_datetime(task["due"])
+    
     time_remaining = due - datetime.now()
     
     # display the remaining time via print in a clear format showing days, hours, minutes, seconds
