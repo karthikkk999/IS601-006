@@ -95,7 +95,7 @@ def process_update(index):
     print(f"Updating task '{task['name']}'")
     print(f"Current description: '{task['description']}'")
     print(f"Current due date: '{task['due']}'")
-
+    # Include your ucid and date as a comment of when you implemented this, briefly summarize the solution
     # UCID: sk3374
     # Date: Feb 16, 8:10 PM
     # The function first tries to get the task by the given index and checks for any index out of bounds scenarios.
@@ -171,6 +171,7 @@ def mark_done(index):
         print(f"Task No. {index + 1} had been marked done already.")        
     save()
 
+    # Include your ucid and date as a comment of when you implemented this, briefly summarize the solution
     # UCID: sk3374
     # Date: Feb 16, 8:35 PM
     # Solution: 
@@ -189,14 +190,16 @@ def view_task(index):
         print("Invalid index. Please enter a valid index.")
         return
 
-    # utilize the given print statement when a task is found
 
+    # Include your ucid and date as a comment of when you implemented this, briefly summarize the solution
     # UCID: sk3374
     # Date: Feb 17, 7:30 pm 
     # added code to handle an invalid index by catching the IndexError and printing an error message
     # If the index is valid, I use the given print statement to print the task number
     # then we print the task information using f-strings and the given format
     # later we use a replace() call to remove any double spaces that may appear in the output
+    
+    # utilize the given print statement when a task is found
     print(f"""
         [{'x' if task['done'] else ' '}] Task: {task['name']}\n 
         Description: {task['description']} \n 
