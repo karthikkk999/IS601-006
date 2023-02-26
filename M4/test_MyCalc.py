@@ -3,73 +3,89 @@ from MyCalc import MyCalc
 calc = MyCalc()
 
 def test_number_add_number():
-    check = calc.calculate(3,4,'+')
-    assert check == 7
+    assert calc.calculate(6,4,'+') == 10
+    assert calc.calculate(3,4,'+') == 7
+    assert calc.calculate(2,4,'+') == 6
     #UCID: sk3374
     #Date: 2/25/23 8:30 PM
-    #function test_number_add_number() calls calculate() function using an object calc of class MyClass
-    #we use test parameters 3,4,+ for testing addition.
-    #then we use assert to compare the result the function returns and the expected result (i.e 7 in our case)
-    
+    #function test_number_add_number() tests the addition of two numbers 
+    #In the assert statement we call the calculate() function which calls add() based on passed operator (i.e '+')
+    #we compare the result the calculate() returns with the expected result and mark the check as failed or passed in the assert.
+    #we perform this check using several asserts with different data
+
 def test_ans_add_number(): 
-    check = calc.calculate("ans",3,'+')
-    assert check == 10
+    assert calc.calculate("ans",3,'+')  == 9
+    assert calc.calculate("ans",1,'+')  == 10
+    assert calc.calculate("ans",4,'+')  == 14
     #UCID: sk3374
     #Date: 2/25/23 8:39 PM
-    #function test_ans_add_number() calls calculate() function using an object calc of class MyClass
-    #we use test parameters "ans",3,- for testing addition when we "ans" as num1.
-    #then we use assert to compare the result the function returns and the expected result (i.e 10 in our case)    
+    #function test_ans_add_number() tests the addition with previous result using ans as num1 
+    #In the assert statement we call the calculate() function which calls add() based on passed operator (i.e '+')
+    #we compare the result the calculate() returns with the expected result and mark the check as failed or passed in the assert.
+    #we perform this check using several asserts with different data
 
 def test_number_sub_number():
-    check = calc.calculate(2,9,'-')
-    assert check == -7
+    assert calc.calculate(1,0,'-') == 1
+    assert calc.calculate(10,5,'-') == 5
+    assert calc.calculate(2,9,'-') == -7
     #UCID: sk3374
     #Date: 2/25/23 8:46 PM
-    #function test_number_sub_number() calls calculate() function using an object calc of class MyClass
-    #we use test parameters 2,9,- for testing subtraction.
-    #then we use assert to compare the result the function returns and the expected result (i.e -7 in our case)
+    #function test_number_sub_number() tests the subtraction of two numbers 
+    #In the assert statement we call the calculate() function which calls sub() based on passed operator (i.e '-')
+    #we compare the result the calculate() returns with the expected result and mark the check as failed or passed in the assert.
+    #we perform this check using several asserts with different data
 
 def test_ans_sub_number():
-    check = calc.calculate("ans",-7,'-')
-    assert check == 0
+    assert calc.calculate("ans",-7,'-') == 0
+    assert calc.calculate("ans",5,'-') == -5
+    assert calc.calculate("ans",-6,'-') == 1
     #UCID: sk3374
     #Date: 2/25/23 8:55 PM
-    #function test_ans_sub_number() calls calculate() function using an object calc of class MyClass
-    #we use test parameters "ans",-7,- for testing subtraction when we "ans" as num1.
-    #then we use assert to compare the result the function returns and the expected result (i.e 0 in our case)
+    #function test_ans_sub_number() tests the subtraction with previous result using ans as num1 
+    #In the assert statement we call the calculate() function which calls sub() based on passed operator (i.e '-')
+    #we compare the result the calculate() returns with the expected result and mark the check as failed or passed in the assert.
+    #we perform this check using several asserts with different data
 
 def test_number_mult_number():
-    check = calc.calculate(3,2,'*')
-    assert check == 6
+    assert calc.calculate(13,3,'*') == 39
+    assert calc.calculate(30,-2,'*') == -60
+    assert calc.calculate(3,2,'*') == 6
     #UCID: sk3374
     #Date: 2/25/23 9:13 PM
-    #function test_number_mult_number() calls calculate() function using an object calc of class MyClass
-    #we use test parameters 3,2,* for testing multiplication.
-    #then we use assert to compare the result the function returns and the expected result (i.e 6 in our case)
+    #function test_number_mult_number() tests the multiplication of two numbers 
+    #In the assert statement we call the calculate() function which calls mul() based on passed operator (i.e '*')
+    #we compare the result the calculate() returns with the expected result and mark the check as failed or passed in the assert.
+    #we perform this check using several asserts with different data
 
 def test_ans_mult_number():
-    check = calc.calculate("ans",3,'*')
-    assert check == 18
+    assert calc.calculate("ans",3,'*') == 18
+    assert calc.calculate("ans",0.5,'*') == 9
+    assert calc.calculate("ans",3,'*') == 27
     #UCID: sk3374
     #Date: 2/25/23 9:23 PM
-    #function test_ans_mult_number() calls calculate() function using an object calc of class MyClass
-    #we use test parameters "ans",3,'*' for testing multiplication when "ans" is used as num1.
-    #then we use assert to compare the result the function returns and the expected result (i.e 18 in our case)
+    #function test_ans_mult_number() tests the muliplicaton with the previous result using ans as num1 
+    #In the assert statement we call the calculate() function which calls mul() based on passed operator (i.e '*')
+    #we compare the result the calculate() returns with the expected result and mark the check as failed or passed in the assert.
+    #we perform this check using several asserts with different data
 
 def test_number_div_number():
-    check = calc.calculate(18,9,'/')
-    assert check == 2
+    assert calc.calculate(100,2,'/') == 50
+    assert calc.calculate(69,3,'/') == 23
+    assert calc.calculate(18,9,'/') == 2
     #UCID: sk3374
     #Date: 2/25/23 9:30 PM
-    #function test_number_div_number() calls calculate() function using an object calc of class MyClass
-    #we use test parameters 18,9,/ for testing division.
-    #then we use assert to compare the result the function returns and the expected result (i.e 2 in our case)
+    #function test_number_div_number() tests the division using two numbers 
+    #In the assert statement we call the calculate() function which calls div() based on passed operator (i.e '/')
+    #we compare the result the calculate() returns with the expected result and mark the check as failed or passed in the assert.
+    #we perform this check using several asserts with different data
 
 def test_ans_div_number():
-    check = calc.calculate("ans",4,'/')
-    assert check == 0.5
+    assert calc.calculate("ans",4,'/') == 0.5
+    assert calc.calculate("ans",0.5,'/') == 1
+    assert calc.calculate("ans",1000,'/') == 0.001
     #UCID: sk3374
     #Date: 2/25/23 9:30 PM
-    #function test_ans_div_number() calls calculate() function using an object calc of class MyClass
-    #we use test parameters "ans",4,/ for testing division.
-    #then we use assert to compare the result the function returns and the expected result (i.e 0.5 in our case)
+    #function test_ans_div_number() tests the division by using the previous number as the divident (ans as num1) 
+    #In the assert statement we call the calculate() function which calls div() based on passed operator (i.e '/')
+    #we compare the result the calculate() returns with the expected result and mark the check as failed or passed in the assert.
+    #we perform this check using several asserts with different data
