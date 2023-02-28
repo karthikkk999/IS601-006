@@ -14,6 +14,7 @@ def test_number_add_number():
     #we perform this check using several asserts with different data
 
 def test_ans_add_number(): 
+    calc.calculate(2,4,'+')
     assert calc.calculate("ans",3,'+')  == 9
     assert calc.calculate("ans",1,'+')  == 10
     assert calc.calculate("ans",4,'+')  == 14
@@ -36,6 +37,7 @@ def test_number_sub_number():
     #we perform this check using several asserts with different data
 
 def test_ans_sub_number():
+    calc.calculate(2,9,'-')
     assert calc.calculate("ans",-7,'-') == 0
     assert calc.calculate("ans",5,'-') == -5
     assert calc.calculate("ans",-6,'-') == 1
@@ -58,6 +60,7 @@ def test_number_mult_number():
     #we perform this check using several asserts with different data
 
 def test_ans_mult_number():
+    calc.calculate(3,2,'*')
     assert calc.calculate("ans",3,'*') == 18
     assert calc.calculate("ans",0.5,'*') == 9
     assert calc.calculate("ans",3,'*') == 27
@@ -80,6 +83,7 @@ def test_number_div_number():
     #we perform this check using several asserts with different data
 
 def test_ans_div_number():
+    calc.calculate(18,9,'/')
     assert calc.calculate("ans",4,'/') == 0.5
     assert calc.calculate("ans",0.5,'/') == 1
     assert calc.calculate("ans",1000,'/') == 0.001
