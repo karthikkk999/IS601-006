@@ -154,8 +154,9 @@ class BurgerMachine:
         print(f"Current Burger: {','.join([x.name for x in self.inprogress_burger])}")
 
     def calculate_cost(self):
+        total_cost = sum(item.cost for item in self.inprogress_burger)
         # TODO add the calculation expression/logic for the inprogress_burger
-        return 10000
+        return total_cost
 
     def run(self):
         try:
@@ -201,6 +202,26 @@ class BurgerMachine:
             # move to the next stage/category
         # handle InvalidPaymentException
             # show an appropriate message
+        except OutOfStockException:
+            print(f"Sorry, we're out of stock for one of the items at the {self.currently_selecting.name} stage.")
+        except NeedsCleaningException:
+            print("The machine needs cleaning.")
+            clean_input = input("Type 'clean' to clean the machine: ")
+            if clean_input.lower() == "clean":
+                self.clean_machine()
+                print("The machine has been cleaned.")
+            else:
+                print("The machine was not cleaned.")
+        except InvalidChoiceException:
+            print(f"Invalid choice in the {self.currently_selecting.name} stage. Please try again.")
+        except ExceededRemainingChoicesException:
+            print(f"You've exceeded the maximum allowed choices for the {self.currently_selecting.name} stage.")
+            if self.currently_selecting == STAGE.Patty:
+                self.currently_selecting = STAGE.Toppings
+            elif self.currently_selecting == STAGE.Toppings:
+                self.currently_selecting = STAGE.Pay
+        except InvalidPaymentException:
+            print("Invalid payment amount. Please try again.")
         except:
             # this is a default catch all, follow the steps above
             print("Something went wrong")
