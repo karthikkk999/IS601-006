@@ -176,7 +176,7 @@ class BurgerMachine:
                 expected = self.calculate_cost()
                 # show expected value as currency format
                 # require total to be entered as currency format
-                total = input(f"Your total is {expected}, please enter the exact value.\n")
+                total = input(f"Your total is ${expected:.2f}, please enter the exact value.\n")
                 self.handle_pay(expected, total)
                 
                 choice = input("What would you like to do? (order or quit)\n")
@@ -210,7 +210,7 @@ class BurgerMachine:
             if clean_input.lower() == "clean":
                 self.clean_machine()
                 print("The machine has been cleaned.")
-            else:
+            else:  
                 print("The machine was not cleaned.")
         except InvalidChoiceException:
             print(f"Invalid choice in the {self.currently_selecting.name} stage. Please try again.")
