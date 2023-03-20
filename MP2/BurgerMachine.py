@@ -2,6 +2,7 @@ from enum import Enum
 import sys
 from BurgerMachineExceptions import ExceededRemainingChoicesException, InvalidChoiceException, InvalidStageException, NeedsCleaningException, OutOfStockException
 from BurgerMachineExceptions import InvalidPaymentException
+from decimal import Decimal
 
 class Usable:
     name = ""
@@ -141,7 +142,11 @@ class BurgerMachine:
     def handle_pay(self, expected, total):
         if self.currently_selecting != STAGE.Pay:
             raise InvalidStageException
-        if total == str(expected):
+        total = Decimal(total.replace('$', ''))
+        # UCID:
+        # Date: 3/20/23 1:01 PM 
+        # removed the '$' if the user enters it and then compared the total with expected amount 
+        if total == expected:
             print("Thank you! Enjoy your burger!")
             self.total_burgers += 1
             self.total_sales += expected # only if successful
@@ -155,8 +160,14 @@ class BurgerMachine:
 
     def calculate_cost(self):
         total_cost = sum(item.cost for item in self.inprogress_burger)
-        # TODO add the calculation expression/logic for the inprogress_burger
-        return total_cost
+        return round(total_cost,2)
+        # UCID: sk3374@njit.edu
+        # Date: 3/15/23 7.30 PM
+        # Logic: we use a for loop that iterates over each item in the inprogress_burger list
+        # Then we use in-built sum() function to sum up the items that were fetched using the for loop 
+        # We store this result in total_cost and return it
+        # Rounded the total to two decimal places for consistency and to reflect the currency format 
+
 
     def run(self):
         try:
@@ -174,9 +185,12 @@ class BurgerMachine:
                 self.print_current_burger()
             elif self.currently_selecting == STAGE.Pay:
                 expected = self.calculate_cost()
-                # show expected value as currency format
-                # require total to be entered as currency format
                 total = input(f"Your total is ${expected:.2f}, please enter the exact value.\n")
+                # UCID: sk3374@njit.edu
+                # Date: 3/16/23 7.40 PM
+                # Logic: to show the amount in currency we used a format specifier .2f to show the amount with 2 decimal places
+                # also added $ to show the amount in USD
+
                 self.handle_pay(expected, total)
                 
                 choice = input("What would you like to do? (order or quit)\n")
@@ -189,19 +203,6 @@ class BurgerMachine:
             # quit
             print("Quitting the burger machine")
             sys.exit()
-        # handle OutOfStockException
-            # show an appropriate message of what stage/category was out of stock
-        # handle NeedsCleaningException
-            # prompt user to type "clean" to trigger clean_machine()
-            # any other input is ignored
-            # print a message whether or not the machine was cleaned
-        # handle InvalidChoiceException
-            # show an appropriate message of what stage/category was the invalid choice was in
-        # handle ExceededRemainingChoicesException
-            # show an appropriate message of which stage/category was exceeded
-            # move to the next stage/category
-        # handle InvalidPaymentException
-            # show an appropriate message
         except OutOfStockException:
             print(f"Sorry, we're out of stock for one of the items at the {self.currently_selecting.name} stage.")
         except NeedsCleaningException:
@@ -224,10 +225,25 @@ class BurgerMachine:
             print("Invalid payment amount. Please try again.")
         except:
             # this is a default catch all, follow the steps above
-            print("Something went wrong")
-        
+            print("Something went wrong")        
         self.run()
-
+        # UCID: sk3374@njit.edu
+        # Date: 3/16/23 7.40 PM
+        # Logic:  
+        # OutOfStockException: 
+            # used a print statement to show the out of stock message (used the value in self.currently_selecting.name to show the current state)
+        # NeedsCleaningException: 
+            # used a print to let user know machine needs cleaning
+            # then used input and a message to ask user to type 'clean' to clean the machine
+            # if user enters clean, we print a message the machine was cleaned
+            # if user enters any other word other than clean we say machine was not cleaned
+        # handle InvalidChoiceException
+            # used a print statement to show an invalid choice message (used the value in self.currently_selecting.name to show the current state)
+        # handle ExceededRemainingChoicesException
+            # used a print statement to show the choices exceeded at that particular stage (used the value in self.currently_selecting.name to show the current state)
+            # then check the current stage using an if elif and stored the next state in self.currently_selecting
+        # handle InvalidPaymentException
+            # used a print statement to show that Invalid payment amount had entered and ask to try again
     def start(self):
         self.run()
 
