@@ -16,7 +16,7 @@
     <form method="GET">
         <div class="row">
             {{country_state_selector(layout="horizontal")}}
-            {{sort_filter(cols=[...])}}
+            {{sort_filter(cols=["name", "country", "state", "city", "zip", "website"])}}
             <div class="col">
                 <input type="submit" class="btn btn-primary" value="Filter" />
             </div>
@@ -32,7 +32,9 @@
                 <tr class="text-capitalize">
                     {# generate th tags for each column to display #}
                     {# IMPORTANT use table column names as the headings, replace _ with space via filter #}
-
+                    {% for column in rows[0].keys() %}
+                        <th>{{ column|replace("_", " ") }}</th>
+                    {% endfor %}
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -46,7 +48,22 @@
                 an edit button that passes the company id to company edit
                 a delete button that passes the company id and the request args to the company delete route
                 #}
-
+                {% for row in rows %}
+                    <tr>
+                        {% for key, value in row.items() %}
+                            {% if key == "website" %}
+                                <td><a href="{{ value }}">Website</a></td>
+                            {% else %}
+                                <td>{{ value }}</td>
+                            {% endif %}
+                        {% endfor %}
+                        <td>
+                            <a href="{{ url_for('employee_search', company_id=row.id, company_name=row.name) }}" class="btn btn-info">View</a>
+                            <a href="{{ url_for('company_edit', company_id=row.id) }}" class="btn btn-warning">Edit</a>
+                            <a href="{{ url_for('company_delete', company_id=row.id, **request.args) }}" class="btn btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
             </tbody>
             {% else %}
             <tbody>

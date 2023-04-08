@@ -1,5 +1,6 @@
 import io
 from flask import Blueprint, render_template, request, redirect, flash
+import csv
 from werkzeug.utils import secure_filename
 from sql.db import DB
 import traceback
@@ -17,7 +18,10 @@ def importCSV():
             flash('No selected file', "warning")
             return redirect(request.url)
         # TODO importcsv-1 check that it's a .csv file, return a proper flash message if it's not
-        if file and secure_filename(file.filename):
+        # UCID: sk3374
+        # Time Added: 4/8/23 7:02 PM
+        # added an another condition to the below if which checks for the file extension ".csv"
+        if file and secure_filename(file.filename) and file.filename.endswith('.csv'):
             companies = []
             employees = []
             # DON'T EDIT
@@ -41,18 +45,25 @@ def importCSV():
                         company_id = (SELECT id FROM IS601_MP3_Companies WHERE name=%(company_name)s LIMIT 1)
             """
             # Note: this reads the file as a stream instead of requiring us to save it
-            stream = io.TextIOWrapper(file.stream._file, "UTF8", newline=None)
             # TODO importcsv-2 read the csv file stream as a dict
-            
-            for row in ...:
+            stream = io.TextIOWrapper(file.stream._file, "UTF8", newline=None)
+
+            csv_reader = csv.DictReader(stream)
+
+            for row in csv_reader:
                 pass # todo remove
                 # print(row) #example
                 # TODO importcsv-3 extract company data and append to company list 
                 # as a dict only with company data if all is present
-                
+                if all(field in row for field in ['name', 'address', 'city', 'country', 'state', 'zip', 'website']):
+                    company = {key: row[key] for key in ['name', 'address', 'city', 'country', 'state', 'zip', 'website']}
+                    companies.append(company)
+
                 # TODO importcsv-4 extract employee data and append to employee list 
                 # as a dict only with employee data if all is present
-                
+                if all(field in row for field in ['first_name', 'last_name', 'email', 'company_name']):
+                    employee = {key: row[key] for key in ['first_name', 'last_name', 'email', 'company_name']}
+                    employees.append(employee)
                
                
             if len(companies) > 0:
@@ -60,23 +71,28 @@ def importCSV():
                 try:
                     result = DB.insertMany(company_query, companies)
                     # TODO importcsv-5 display flash message about number of companies inserted
+                    flash(f"{len(companies)} companies inserted or updated", "success")
                 except Exception as e:
                     traceback.print_exc()
                     flash("There was an error loading in the csv data", "danger")
             else:
                 # TODO importcsv-6 display flash message (info) that no companies were loaded
-                pass
+                flash("No companies were loaded", "info")
+                #pass
+
             if len(employees) > 0:
                 print(f"Inserting or updating {len(employees)} employees")
                 try:
                     result = DB.insertMany(employee_query, employees)
                     # TODO importcsv-7 display flash message about number of employees loaded
+                    flash(f"{len(employees)} employees inserted or updated", "success")
                 except Exception as e:
                     traceback.print_exc()
                     flash("There was an error loading in the csv data", "danger")
             else:
                  # TODO importcsv-8 display flash message (info) that no employees were loaded
-                pass
+                flash("No employees were loaded", "info")
+                #pass
             try:
                 result = DB.selectOne("SHOW SESSION STATUS LIKE 'questions'")
                 print(f"Result {result}")

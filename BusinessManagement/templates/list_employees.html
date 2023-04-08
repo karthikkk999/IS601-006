@@ -22,7 +22,7 @@
                 <label class="visually-hidden" for="company">Company</label>
                 {{company_dropdown(request.args.get("company"))}}
             </div>
-            {{sort_filter(cols=[...])}}
+            {{sort_filter(cols=["fn", "ln", "email", "company"])}}
             <div class="col">
                 <input type="submit" class="btn btn-primary" value="Filter" />
             </div>
@@ -37,7 +37,9 @@
             <tr class="text-capitalize">
                 {# generate th tags for each column to display #}
                 {# IMPORTANT use table column names as the headings, replace _ with space via filter #}
-
+                {% for column in rows[0].keys() %}
+                    <th>{{ column|replace("_", " ") }}</th>
+                {% endfor %}
                 <th>Actions</th>
             </tr>
         </thead>
@@ -47,7 +49,17 @@
             an edit button that passes the employee id to employee edit
             a delete button that passes the employee id and the request args to the employee delete route
             #}
-
+            {% for row in rows %}
+            <tr>
+                {% for key, value in row.items() %}
+                    <td>{{ value }}</td>
+                {% endfor %}
+                <td>
+                    <a href="{{ url_for('employee_edit', employee_id=row.id) }}" class="btn btn-warning">Edit</a>
+                    <a href="{{ url_for('employee_delete', employee_id=row.id, **request.args) }}" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        {% endfor %}
         </tbody>
         {% else %}
         <tbody>
