@@ -10,7 +10,7 @@ def search():
     # don't do SELECT *
     
     query = " SELECT c.id, c.name, c.address, c.city, c.country, c.state, c.zip, c.website, (SELECT COUNT(e.id) FROM IS601_MP3_Employees e WHERE e.company_id = c.id) as employees FROM IS601_MP3_Companies c WHERE 1=1"
-    args = {} # <--- add values to replace %s/%(named)s placeholders
+    args = [] # <--- add values to replace %s/%(named)s placeholders
     allowed_columns = ["name", "city", "country", "state"]
     allowed_list = [(v, v) for v in allowed_columns]
     # TODO search-2 get name, country, state, column, order, limit request args
@@ -28,37 +28,39 @@ def search():
     limit = request.args.get("limit")
 
     if name:
-        query += " AND name LIKE %(name)s"
-        args["name"] = f"%{name}%"
+        query += " AND name LIKE %s"
+        args.append(f"%{name}%")
 
     if country:
-        query += " AND country = %(country)s"
-        args["country"] = country
+        query += " AND country = %s"
+        args.append(f"%{country}%")
 
     if state:
-        query += " AND state = %(state)s"
-        args["state"] = state
+        query += " AND state = %s"
+        args.append(f"%{state}%")
 
     if column and order and column in allowed_columns and order.lower() in ["asc", "desc"]:
         query += f" ORDER BY {column} {order}"
 
-
-    limit = int(limit) if limit else 10
-
-    query += " LIMIT %(limit)s"
-    args["limit"] = limit
+    if limit and (int(limit) <= 0 or int(limit) > 100):
+        flash("Enter the limit between 1 and 100", 'warning')
+    else:
+        limit = int(limit) if limit else 10
+        query += " LIMIT %s"
+        args.append(limit)
+    
     print("query",query)
     print("args", args)
 
     try:
-        result = DB.selectAll(query, args)
+        result = DB.selectAll(query, *args)
         #print(f"result {result.rows}")
         if result.status:
             rows = result.rows
             print(f"rows {rows}")
     except Exception as e:
         # TODO search-9 make message user friendly
-        flash("There was an error processing your search", "danger")
+        flash(f"There was an error processing your search. {str(e)}", "danger")
     # hint: use allowed_columns in template to generate sort dropdown
     # hint2: convert allowed_columns into a list of tuples representing (value, label)
     # do this prior to passing to render_template, but not before otherwise it can break validation
@@ -121,22 +123,14 @@ def add():
         if not has_error:
             try:
                 result = DB.insertOne("""
-                INSERT INTO company (name, address, city, country, state, zip, website)
-                VALUES (%(name)s, %(address)s, %(city)s, %(country)s, %(state)s, %(zip)s, %(website)s)
-                """, {
-                    "name": name,
-                    "address": address,
-                    "city": city,
-                    "state": state,
-                    "country": country,
-                    "zip": zipcode,
-                    "website": website
-                }) # <-- TODO add-8 add query and add arguments
+                INSERT INTO IS601_MP3_Companies
+                (name, address, city, country, state, zip, website) VALUES(%s, %s, %s, %s, %s, %s, %s)
+                """, name, address, city, country, state, zipcode, website) # <-- TODO add-8 add query and add arguments
                 if result.status:
                     flash("Added Company", "success")
             except Exception as e:
                 # TODO add-9 make message user friendly
-                flash("There was an error adding the company", "danger")
+                flash(f"There was an error adding the company. str{e}", "danger")
         
     return render_template("add_company.html")
 
@@ -173,13 +167,13 @@ def edit():
             state = request.form.get("state")
             country = request.form.get("country")
             zipcode = request.form.get("zip")
-            website = request.form.get("website")
+            website = request.form.get("website") or ''
 
             has_error = False # use this to control whether or not an insert occurs
 
             if not name:
                 flash("Name is required", "danger")
-            has_error = True
+                has_error = True
 
             if not address:
                 flash("Address is required", "danger")
@@ -206,36 +200,26 @@ def edit():
                     # TODO edit-9 fill in proper update query
                     # name, address, city, state, country, zip, website
 
-                    data.update({
-                            "name": name,
-                            "address": address,
-                            "city": city,
-                            "state": state,
-                            "country": country,
-                            "zip": zipcode,
-                            "website": website
-                        })
                     result = DB.update("""
-                    UPDATE company
-                    SET name = %(name)s, address = %(address)s, city = %(city)s, state = %(state)s, country = %(country)s, zip = %(zip)s, website = %(website)s
-                    WHERE id = %(id)s
-                    """, data)
+                    UPDATE IS601_MP3_Companies 
+                    SET name = %s, address = %s, city = %s, country = %s, state = %s, zip = %s, website = %s
+                    WHERE id = %s""", name, address, city, country, state, zipcode, website, id)
                     if result.status:
                         print("updated record")
                         flash("Updated record", "success")
                 except Exception as e:
                     # TODO edit-10 make this user-friendly
-                    flash("There was an error updating the company", "danger")
-        row = {}
-        try:
-            # TODO edit-11 fetch the updated data
-            result = DB.selectOne("SELECT * FROM company WHERE id = %s", (id,))
-            if result.status:
-                row = result.row
-                
-        except Exception as e:
-            # TODO edit-12 make this user-friendly
-            flash("There was an error fetching the company data", "danger")
+                    flash(f"There was an error updating the company. {str(e)}", "danger")
+    row = {}
+    try:
+        # TODO edit-11 fetch the updated data
+        result = DB.selectOne("SELECT name, address, city, country, state, zip, website FROM IS601_MP3_Companies WHERE id = %s", (id,))
+        if result.status:
+            row = result.row
+            
+    except Exception as e:
+        # TODO edit-12 make this user-friendly
+        flash(f"There was an error fetching the company data. {str(e)}", "danger")
     # TODO edit-13 pass the company data to the render template
     return render_template("edit_company.html", company=row)
 
@@ -247,19 +231,20 @@ def edit():
     # TODO delete-5 for all employees assigned to this company set their company_id to None/null
     # TODO delete-6 if id is missing, flash necessary message and redirect to search
 def delete():
+
     id = request.args.get("id")
 
     if not id:
         flash("company ID id required", "danger")
         return redirect(url_for("company.search")) 
     try:
-        DB.update("UPDATE employee SET company_id = NULL WHERE company_id = %s", (id,))
-        result = DB.delete("DELETE FROM company WHERE id = %s", (id,))
+        DB.update("UPDATE IS601_MP3_Employees SET company_id = NULL WHERE company_id = %s", id)
+        result = DB.delete("DELETE FROM IS601_MP3_Companies WHERE id = %s", id)
 
         if result.status:
             flash("Deleted company and unassigned associated employees", "success")
     except Exception as e:
-        flash("There was an error deleting the company", "danger")
+        flash(f"There was an error deleting the company. {str(e)}", "danger")
 
     query_params = request.args.copy()
     query_params.pop("id", None)

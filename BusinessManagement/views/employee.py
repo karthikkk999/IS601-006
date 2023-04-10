@@ -37,7 +37,7 @@ def search():
     company = request.args.get("company")
     column = request.args.get("column")
     order = request.args.get("order")
-    limit = request.args.get("limit", default=10, type=int)
+    limit = request.args.get("limit", default=10)
 
     if fn:
         query += " AND first_name LIKE %s"
@@ -62,13 +62,14 @@ def search():
         query += f" ORDER BY {column} {order}"
 
     # TODO search-8 append limit (default 10) or limit greater than 1 and less than or equal to 100
-    if limit and int(limit) > 0 and int(limit) <= 100:
-        query += " LIMIT %s"
-        args.append(int(limit))
-    # TODO search-9 provide a proper error message if limit isn't a number or if it's out of bounds
-    elif limit and (int(limit) <= 0 or int(limit) > 100):
+    # TODO search-9 provide a proper error message if limit isn't a number or if it's out of bounds    
+    if limit and (int(limit) <= 0 or int(limit) > 100):
         flash("Enter the limit between 1 and 100", 'warning')
-    
+    else:
+        limit = int(limit) if limit else 10
+        query += " LIMIT %s"
+        args.append(limit)
+        
     print("query", query)
     print("args", args)
     
@@ -98,44 +99,43 @@ def add():
         has_error = False # use this to control whether or not an insert occurs
         first_name = str(request.form.get("first_name"))
         last_name = str(request.form.get("last_name"))
-        company = str(request.form.get("company"))
+        company_id = str(request.form.get("company")) or None
         email = str(request.form.get("email"))
 
-        # TODO add-2 first_name is required (flash proper error message)
+        # todo add-2 first_name is required (flash proper error message)
         if not first_name:
-            flash("First name is required.", "danger")
+            flash("first name is required.", "danger")
             has_error = True
 
-        # TODO add-3 last_name is required (flash proper error message)
+        # todo add-3 last_name is required (flash proper error message)
         if not last_name:
-            flash("Last name is required.", "danger")
+            flash("last name is required.", "danger")
             has_error = True
 
-        # TODO add-4 company (may be None)
+        # todo add-4 company (may be none)
         # company variable is already retrieved
 
-        # TODO add-5 email is required (flash proper error message)
+        # todo add-5 email is required (flash proper error message)
         if not email:
-            flash("Email is required.", "danger")
+            flash("email is required.", "danger")
             has_error = True
-        # TODO add-5a verify email is in the correct format
+        # todo add-5a verify email is in the correct format
         elif not is_valid_email(email):
-            flash("Invalid email format.", "danger")
+            flash("invalid email format.", "danger")
             has_error = True
 
             
-            if not has_error:
-                try:
-                    result = DB.insertOne("""
-                    INSERT INTO IS601_MP3_Employees (first_name, last_name, company_id, email)
-                    VALUES (%(first_name)s, %(last_name)s, %(company)s, %(email)s)
-                    """, {"first_name": first_name, "last_name": last_name, "company": company, "email": email}
-                    ) # <-- TODO add-6 add query and add arguments
-                    if result.status:
-                        flash("Created Employee Record", "success")
-                except Exception as e:
-                    # TODO add-7 make message user friendly
-                    flash("An error occurred while adding the employee.", "danger")
+        if not has_error:
+            try:
+                result = DB.insertOne("""
+                INSERT INTO IS601_MP3_Employees
+                (first_name, last_name, company_id, email) VALUES (%s, %s, %s, %s);
+                """, first_name, last_name, company_id, email)  # <-- TODO add-6 add query and add arguments
+                if result.status:
+                    flash("Created Employee Record", "success")
+            except Exception as e:
+                # TODO add-7 make message user friendly
+                flash(f"An error occurred while adding the employee.{str(e)}", "danger")
     return render_template("add_employee.html")
 
 @employee.route("/edit", methods=["GET", "POST"])
@@ -157,22 +157,25 @@ def edit():
             has_error = False # use this to control whether or not an insert occurs
             first_name = str(request.form.get("first_name"))
             last_name = str(request.form.get("last_name"))
-            company = str(request.form.get("company"))
+            company_id = str(request.form.get("company"))
             email = str(request.form.get("email"))
             
             # TODO edit-2 first_name is required (flash proper error message)
             if not first_name:
                 flash("First name is required.", "danger")
                 has_error = True
+                return redirect("add")
 
             # TODO edit-3 last_name is required (flash proper error message)
             if not last_name:
                 flash("Last name is required.", "danger")
                 has_error = True
+                return redirect("add")
 
             # TODO edit-4 company (may be None)
             # company variable is already retrieved
-
+            if not company_id:
+                company_id = None
             # TODO edit-5 email is required (flash proper error message)
             if not email:
                 flash("Email is required.", "danger")
@@ -185,12 +188,9 @@ def edit():
             if not has_error:
                 try:
                     # TODO edit-6 fill in proper update query
-                    result = DB.update("""
-            UPDATE IS601_MP3_Employees SET
-            first_name = %(first_name)s, last_name = %(last_name)s, company_id = %(company)s, email = %(email)s
-            WHERE id = %(id)s
-            """, {"id": id, "last_name": last_name, "company": company, "email": email}
-                  )
+                    result =  DB.update("""
+                    UPDATE IS601_MP3_Employees SET first_name = %s, last_name = %s, company_id = %s, email = %s WHERE id = %s
+                    """,first_name,last_name,company_id, email, id)
                     if result.status:
                         flash("Updated record", "success")
                 except Exception as e:
@@ -201,14 +201,14 @@ def edit():
             # TODO edit-8 fetch the updated data 
             result = DB.selectOne("""
             SELECT e.id as id, e.first_name, e.last_name, e.email, c.id as company_id, c.name as company_name
-            FROM IS601_MP3_Employees e LEFT JOIN IS601_MP3_Companies c ON e.company_id = c.company.id
+            FROM IS601_MP3_Employees e LEFT JOIN IS601_MP3_Companies c ON e.company_id = c.id
             WHERE e.id = %s
             """, (id,))
             if result.status:
                 row = result.row
         except Exception as e:
             # TODO edit-9 make this user-friendly
-            flash("An error occurred while fetching employee data.", "danger")
+            flash(f"An error occurred while fetching employee data. {str(e)}", "danger")
     # TODO edit-10 pass the employee data to the render template
     return render_template("edit_employee.html", employee=row)
 
@@ -220,20 +220,23 @@ def delete():
     # TODO delete-4 ensure a flash message shows for successful delete
     # TODO delete-5 if id is missing, flash necessary message and redirect to search
     # TODO delete-1 delete employee by id
-    id = request.args.get("id")
-    args = {**request.args}
-    if id:
-        try:
-            result = DB.delete("DELETE FROM IS601_MP3_Employees WHERE id = %s", id)
-            if result.status:
-                flash("Deleted Employee record", "success")
-        except Exception as e:
-            flash(f" Following exception occured while deleting the employee record: {str(e)}", "danger")
-        del args["id"]
-    else:
-        flash(f" id is missing", "danger")
-    return redirect(url_for("employee.search", **args))
-    pass
 
     # TODO delete-2 redirect to employee search
     # TODO delete-3 pass all argument except id to this route
+    
+    id = request.args.get("id")
+
+    if not id:
+        flash("Employee ID id required", "danger")
+        return redirect(url_for("employee.search")) 
+    try:
+        result = DB.delete("DELETE FROM IS601_MP3_Employees WHERE id = %s", id)
+        if result.status:
+            flash("Deleted Employee", "success")
+    except Exception as e:
+        flash(f"There was an error deleting the employee. {str(e)}", "danger")
+
+    query_params = request.args.copy()
+    query_params.pop("id", None)
+    return redirect(url_for("employee.search", **query_params))
+    
