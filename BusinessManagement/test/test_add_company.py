@@ -42,7 +42,7 @@ def runner(app):
 
 #https://pypi.org/project/pytest-order/
 @pytest.mark.order("last")
-def test_add_compnay(client):
+def test_add_company(client):
     from ..sql.db import DB
     resp = client.post("/company/add", data={
         "name": "_test_comp",

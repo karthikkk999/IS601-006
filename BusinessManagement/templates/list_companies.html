@@ -15,16 +15,27 @@
     #}
     <form method="GET">
         <div class="row">
+            <div class="col">
+                <input id="name" class="form-control" placeholder="name" name="name" type="text"value="{{ allowed_columns[0].value }}">
+            </div>
+            <!-- UCID: sk3374; Date: 04/08/23 -->
+
             {{country_state_selector(layout="horizontal")}}
-            {{sort_filter(cols=["name", "country", "state", "city", "zip", "website"])}}
+            {{sort_filter(cols=allowed_columns)}}
+            <div class="col">
+                <input id="limit" type="number" class="form-control" value="10" name="limit" />
+            </div>
+            <!-- UCID: sk3374; Date: 04/08/23 -->
             <div class="col">
                 <input type="submit" class="btn btn-primary" value="Filter" />
             </div>
+            <!-- UCID: sk3374; Date: 04/08/23 -->
             <div class="col">
                 <a href="?" class="btn btn-secondary">Reset</a>
             </div>
         </div>
     </form>
+    
     <div class="table-responsive">
         <table class="table">
             {% if rows and rows|length > 0 %}
@@ -32,11 +43,18 @@
                 <tr class="text-capitalize">
                     {# generate th tags for each column to display #}
                     {# IMPORTANT use table column names as the headings, replace _ with space via filter #}
-                    {% for column in rows[0].keys() %}
-                        <th>{{ column|replace("_", " ") }}</th>
-                    {% endfor %}
+                    <th>id</th>
+                    <th>name</th>
+                    <th>address</th>
+                    <th>city</th>
+                    <th>country</th>
+                    <th>state</th>
+                    <th>zip</th>
+                    <th>website</th>
+                    <th>employees</th>
                     <th>Actions</th>
                 </tr>
+                <!-- UCID: sk3374; Date: 04/08/23 -->
             </thead>
             <tbody>
                 {# generate tr with td tags for each piece of data #}
@@ -49,21 +67,24 @@
                 a delete button that passes the company id and the request args to the company delete route
                 #}
                 {% for row in rows %}
-                    <tr>
-                        {% for key, value in row.items() %}
-                            {% if key == "website" %}
-                                <td><a href="{{ value }}">Website</a></td>
-                            {% else %}
-                                <td>{{ value }}</td>
-                            {% endif %}
-                        {% endfor %}
-                        <td>
-                            <a href="{{ url_for('employee_search', company_id=row.id, company_name=row.name) }}" class="btn btn-info">View</a>
-                            <a href="{{ url_for('company_edit', company_id=row.id) }}" class="btn btn-warning">Edit</a>
-                            <a href="{{ url_for('company_delete', company_id=row.id, **request.args) }}" class="btn btn-danger">Delete</a>
-                        </td>
-                    </tr>
+                <tr>
+                    <td>{{ row.id }}</td>
+                    <td>{{ row.name }}</td>
+                    <td>{{ row.address }}</td>
+                    <td>{{ row.city }}</td>
+                    <td>{{ row.country }}</td>
+                    <td>{{ row.state }}</td>
+                    <td>{{ row.zip }}</td>
+                    <td><a href="{{ row.website }}">website</a></td>
+                    <td>{{ row.employees }}</td>
+                    <td>
+                        <a href="{{url_for('company.edit', id=row.id)}}">Edit</a>
+                        <a href="{{url_for('company.delete', id=row.id)}}">Delete</a>
+                    </td>
+                    <!-- UCID: sk3374; Date: 04/08/23 -->
+                </tr>
                 {% endfor %}
+
             </tbody>
             {% else %}
             <tbody>

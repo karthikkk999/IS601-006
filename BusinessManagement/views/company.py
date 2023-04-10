@@ -9,9 +9,10 @@ def search():
     # TODO search-1 retrieve id, name, address, city, country, state, zip, website, employee count as employees for the company
     # don't do SELECT *
     
-    query = "... WHERE 1=1"
+    query = " SELECT c.id, c.name, c.address, c.city, c.country, c.state, c.zip, c.website, (SELECT COUNT(e.id) FROM IS601_MP3_Employees e WHERE e.company_id = c.id) as employees FROM IS601_MP3_Companies c WHERE 1=1"
     args = {} # <--- add values to replace %s/%(named)s placeholders
     allowed_columns = ["name", "city", "country", "state"]
+    allowed_list = [(v, v) for v in allowed_columns]
     # TODO search-2 get name, country, state, column, order, limit request args
     # TODO search-3 append a LIKE filter for name if provided
     # TODO search-4 append an equality filter for country if provided
@@ -19,13 +20,36 @@ def search():
     # TODO search-6 append sorting if column and order are provided and within the allows columsn and allowed order asc,desc
     # TODO search-7 append limit (default 10) or limit greater than 1 and less than or equal to 100
     # TODO search-8 provide a proper error message if limit isn't a number or if it's out of bounds
-    
+    name = request.args.get("name")
+    country = request.args.get("country")
+    state = request.args.get("state")
+    column = request.args.get("column")
+    order = request.args.get("order")
+    limit = request.args.get("limit")
 
-    limit = 10 # TODO change this per the above requirements
+    if name:
+        query += " AND name LIKE %(name)s"
+        args["name"] = f"%{name}%"
+
+    if country:
+        query += " AND country = %(country)s"
+        args["country"] = country
+
+    if state:
+        query += " AND state = %(state)s"
+        args["state"] = state
+
+    if column and order and column in allowed_columns and order.lower() in ["asc", "desc"]:
+        query += f" ORDER BY {column} {order}"
+
+
+    limit = int(limit) if limit else 10
+
     query += " LIMIT %(limit)s"
     args["limit"] = limit
     print("query",query)
     print("args", args)
+
     try:
         result = DB.selectAll(query, args)
         #print(f"result {result.rows}")
@@ -34,12 +58,14 @@ def search():
             print(f"rows {rows}")
     except Exception as e:
         # TODO search-9 make message user friendly
-        flash(str(e), "danger")
+        flash("There was an error processing your search", "danger")
     # hint: use allowed_columns in template to generate sort dropdown
     # hint2: convert allowed_columns into a list of tuples representing (value, label)
     # do this prior to passing to render_template, but not before otherwise it can break validation
     
-    return render_template("list_companies.html", rows=rows, allowed_columns=allowed_columns)
+    allowed_columns = [(col, col.capitalize()) for col in allowed_columns]
+    
+    return render_template("list_companies.html", rows=rows, allowed_columns=allowed_list)
 
 @company.route("/add", methods=["GET","POST"])
 def add():
@@ -57,32 +83,71 @@ def add():
         # TODO add-7 website is not required
         # TODO add-8 zipcode is required (flash proper error message)
         # note: call zip variable zipcode as zip is a built in function it could lead to issues
+        name = request.form.get("name")
+        address = request.form.get("address")
+        city = request.form.get("city")
+        state = request.form.get("state")
+        country = request.form.get("country")
+        zipcode = request.form.get("zip")
+        website = request.form.get("website")
 
         has_error = False # use this to control whether or not an insert occurs
         
+        if not name:
+            flash("Name is required", "danger")
+            has_error = True
+
+        if not address:
+            flash("Address is required", "danger")
+            has_error = True
+
+        if not city:
+            flash("City is required", "danger")
+            has_error = True
+
+        if not state:
+            flash("State is required", "danger")
+            has_error = True
+
+        if not country:
+            flash("Country is required", "danger")
+            has_error = True
+            
+        if not zipcode:
+            flash("Zipcode is required", "danger")
+            has_error = True
+
 
         if not has_error:
             try:
                 result = DB.insertOne("""
-                INSERT INTO ...
-                ...
-                VALUES
-                ...
-                """, ...) # <-- TODO add-8 add query and add arguments
+                INSERT INTO company (name, address, city, country, state, zip, website)
+                VALUES (%(name)s, %(address)s, %(city)s, %(country)s, %(state)s, %(zip)s, %(website)s)
+                """, {
+                    "name": name,
+                    "address": address,
+                    "city": city,
+                    "state": state,
+                    "country": country,
+                    "zip": zipcode,
+                    "website": website
+                }) # <-- TODO add-8 add query and add arguments
                 if result.status:
                     flash("Added Company", "success")
             except Exception as e:
                 # TODO add-9 make message user friendly
-                flash(str(e), "danger")
+                flash("There was an error adding the company", "danger")
         
     return render_template("add_company.html")
 
 @company.route("/edit", methods=["GET", "POST"])
 def edit():
     # TODO edit-1 request args id is required (flash proper error message)
-    id = False
+    id = id = request.args.get("id")
+
     if not id: # TODO update this for TODO edit-1
-        pass
+        flash("Company ID is required", "danger")
+        return redirect(url_for("company.search"))
     else:
         if request.method == "POST":
             data = {"id": id} # use this as needed, can convert to tuple if necessary
@@ -101,45 +166,102 @@ def edit():
             
             # note: call zip variable zipcode as zip is a built in function it could lead to issues
             # populate data dict with mappings
+
+            name = request.form.get("name")
+            address = request.form.get("address")
+            city = request.form.get("city")
+            state = request.form.get("state")
+            country = request.form.get("country")
+            zipcode = request.form.get("zip")
+            website = request.form.get("website")
+
             has_error = False # use this to control whether or not an insert occurs
 
+            if not name:
+                flash("Name is required", "danger")
+            has_error = True
+
+            if not address:
+                flash("Address is required", "danger")
+                has_error = True
+
+            if not city:
+                flash("City is required", "danger")
+                has_error = True
+
+            if not state:
+                flash("State is required", "danger")
+                has_error = True
+
+            if not country:
+                flash("Country is required", "danger")
+                has_error = True
+
+            if not zipcode:
+                flash("Zipcode is required", "danger")
+                has_error = True
             
             if not has_error:
                 try:
                     # TODO edit-9 fill in proper update query
                     # name, address, city, state, country, zip, website
+
+                    data.update({
+                            "name": name,
+                            "address": address,
+                            "city": city,
+                            "state": state,
+                            "country": country,
+                            "zip": zipcode,
+                            "website": website
+                        })
                     result = DB.update("""
-                    UPDATE ...
-                    SET
-                    ...
+                    UPDATE company
+                    SET name = %(name)s, address = %(address)s, city = %(city)s, state = %(state)s, country = %(country)s, zip = %(zip)s, website = %(website)s
+                    WHERE id = %(id)s
                     """, data)
                     if result.status:
                         print("updated record")
                         flash("Updated record", "success")
                 except Exception as e:
                     # TODO edit-10 make this user-friendly
-                    print(f"{e}")
-                    flash(str(e), "danger")
+                    flash("There was an error updating the company", "danger")
         row = {}
         try:
             # TODO edit-11 fetch the updated data
-            result = DB.selectOne("SELECT ... FROM ... WHERE ...", id)
+            result = DB.selectOne("SELECT * FROM company WHERE id = %s", (id,))
             if result.status:
                 row = result.row
                 
         except Exception as e:
             # TODO edit-12 make this user-friendly
-            flash(str(e), "danger")
+            flash("There was an error fetching the company data", "danger")
     # TODO edit-13 pass the company data to the render template
-    return render_template("edit_company.html", ...)
+    return render_template("edit_company.html", company=row)
 
 @company.route("/delete", methods=["GET"])
-def delete():
     # TODO delete-1 delete company by id (unallocate any employees see delete-5)
     # TODO delete-2 redirect to company search
     # TODO delete-3 pass all argument except id to this route
     # TODO delete-4 ensure a flash message shows for successful delete
     # TODO delete-5 for all employees assigned to this company set their company_id to None/null
     # TODO delete-6 if id is missing, flash necessary message and redirect to search
-    pass
+def delete():
+    id = request.args.get("id")
+
+    if not id:
+        flash("company ID id required", "danger")
+        return redirect(url_for("company.search")) 
+    try:
+        DB.update("UPDATE employee SET company_id = NULL WHERE company_id = %s", (id,))
+        result = DB.delete("DELETE FROM company WHERE id = %s", (id,))
+
+        if result.status:
+            flash("Deleted company and unassigned associated employees", "success")
+    except Exception as e:
+        flash("There was an error deleting the company", "danger")
+
+    query_params = request.args.copy()
+    query_params.pop("id", None)
+    return redirect(url_for("company.search", **query_params))
     
