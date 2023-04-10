@@ -28,8 +28,10 @@ def runner(app):
 def get_column_index(target, cells):
     rowIndex = -1
     index = 1
+    print('cells', cells)
     for th in cells:
         test = th.string.lower().replace(" ", "_")
+
         if test == target:
             rowIndex = index
             break

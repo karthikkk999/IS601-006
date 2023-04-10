@@ -15,7 +15,7 @@ def search():
     # DO NOT DELETE PROVIDED COMMENTS
     # TODO search-1 retrieve employee id as id, first_name, last_name, email, company_id, company_name using a LEFT JOIN
     query = """
-        SELECT e.id as id, e.first_name, e.last_name, e.email, c.id as company_id, c.name as company_name
+        SELECT e.id, e.first_name, e.last_name, e.email, c.id as company_id, IF(c.name is null, 'N/A', c.name) as company_name
         FROM IS601_MP3_Employees e LEFT JOIN IS601_MP3_Companies c ON e.company_id = c.id WHERE 1=1
     """
 
@@ -58,8 +58,14 @@ def search():
         query += f" AND company_id = {company}"
 
     # TODO search-7 append sorting if column and order are provided and within the allowed columns and order options (asc, desc)
-    if column in allowed_columns and order in ["asc", "desc"]:
-        query += f" ORDER BY {column} {order}"
+    # if str(column) in allowed_columns and order in ["asc", "desc"]:
+    #     query += f" ORDER BY {column} {order}"
+
+    if column and order:
+        print(column, order)
+        if column in allowed_columns \
+            and order in ["asc", "desc"]:
+            query += f" ORDER BY {column} {order}"
 
     # TODO search-8 append limit (default 10) or limit greater than 1 and less than or equal to 100
     # TODO search-9 provide a proper error message if limit isn't a number or if it's out of bounds    
@@ -99,7 +105,7 @@ def add():
         has_error = False # use this to control whether or not an insert occurs
         first_name = str(request.form.get("first_name"))
         last_name = str(request.form.get("last_name"))
-        company_id = str(request.form.get("company")) or None
+        company = request.form.get("company") or None
         email = str(request.form.get("email"))
 
         # todo add-2 first_name is required (flash proper error message)
@@ -130,7 +136,7 @@ def add():
                 result = DB.insertOne("""
                 INSERT INTO IS601_MP3_Employees
                 (first_name, last_name, company_id, email) VALUES (%s, %s, %s, %s);
-                """, first_name, last_name, company_id, email)  # <-- TODO add-6 add query and add arguments
+                """, first_name, last_name, company, email)  # <-- TODO add-6 add query and add arguments
                 if result.status:
                     flash("Created Employee Record", "success")
             except Exception as e:
@@ -157,7 +163,7 @@ def edit():
             has_error = False # use this to control whether or not an insert occurs
             first_name = str(request.form.get("first_name"))
             last_name = str(request.form.get("last_name"))
-            company_id = str(request.form.get("company"))
+            company = request.form.get("company")
             email = str(request.form.get("email"))
             
             # TODO edit-2 first_name is required (flash proper error message)
@@ -174,8 +180,9 @@ def edit():
 
             # TODO edit-4 company (may be None)
             # company variable is already retrieved
-            if not company_id:
-                company_id = None
+            if not company:
+                company = None
+
             # TODO edit-5 email is required (flash proper error message)
             if not email:
                 flash("Email is required.", "danger")
@@ -190,7 +197,7 @@ def edit():
                     # TODO edit-6 fill in proper update query
                     result =  DB.update("""
                     UPDATE IS601_MP3_Employees SET first_name = %s, last_name = %s, company_id = %s, email = %s WHERE id = %s
-                    """,first_name,last_name,company_id, email, id)
+                    """,first_name,last_name,company, email, id)
                     if result.status:
                         flash("Updated record", "success")
                 except Exception as e:

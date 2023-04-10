@@ -48,24 +48,23 @@ def importCSV():
             # TODO importcsv-2 read the csv file stream as a dict
             stream = io.TextIOWrapper(file.stream._file, "UTF8", newline=None)
 
-            csv_reader = csv.DictReader(stream)
+            csv_reader = csv.DictReader(stream, delimiter=',')
 
             for row in csv_reader:
-                pass # todo remove
-                # print(row) #example
+                print(row)
                 # TODO importcsv-3 extract company data and append to company list 
                 # as a dict only with company data if all is present
-                if all(field in row for field in ['name', 'address', 'city', 'country', 'state', 'zip', 'website']):
-                    company = {key: row[key] for key in ['name', 'address', 'city', 'country', 'state', 'zip', 'website']}
-                    companies.append(company)
+                if row["company_name"] and row["address"] and row["city"] and row["state"] and row["zip"] and row["web"] and row["country"]:
+                   companies.append({"name" : row["company_name"],  "address" :  row["address"], "city" : row["city"], "state" : row["state"], "country" : row["country"],
+                    "zip": row["zip"], "website" : row["web"]})
+
 
                 # TODO importcsv-4 extract employee data and append to employee list 
-                # as a dict only with employee data if all is present
-                if all(field in row for field in ['first_name', 'last_name', 'email', 'company_name']):
-                    employee = {key: row[key] for key in ['first_name', 'last_name', 'email', 'company_name']}
-                    employees.append(employee)
-               
-               
+                # as a dict only with employee data if all is present                   
+                if row["first_name"] and row["last_name"] and row["email"] and row["company_name"]:
+                    employees.append({"first_name" : row["first_name"],  "last_name" :  row["last_name"], "email" : row["email"], "company_name" : row["company_name"]})
+                
+
             if len(companies) > 0:
                 print(f"Inserting or updating {len(companies)} companies")
                 try:

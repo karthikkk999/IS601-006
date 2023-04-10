@@ -28,7 +28,7 @@
                 <input type="email" class="form-control" id="email" name="email" required value="{{ employee.email }}">
             </div>
             {# use the below for company selection #}
-            {{ company_dropdown(employee.company) }}
+            {{ company_dropdown(employee.company_id) }}
             <input type="submit" class="btn btn-primary" value="Save Employee" />
         </form>
     </div>

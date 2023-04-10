@@ -32,11 +32,11 @@ def search():
         args.append(f"%{name}%")
 
     if country:
-        query += " AND country = %s"
+        query += " AND country LIKE %s"
         args.append(f"%{country}%")
 
     if state:
-        query += " AND state = %s"
+        query += " AND state LIKE %s"
         args.append(f"%{state}%")
 
     if column and order and column in allowed_columns and order.lower() in ["asc", "desc"]:
