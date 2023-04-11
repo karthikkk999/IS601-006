@@ -120,10 +120,9 @@ def add():
             has_error = True        
             state_code = country + "-" + state            
             state_name = pycountry.subdivisions.get(code=state_code).name
-
-        if state_name.lower() not in [s.name.lower() for s in pycountry.subdivisions.get(country_code=country.upper())]:
-            flash("Enter valid state", 'danger')
-            return redirect("edit")
+            if state_name.lower() not in [s.name.lower() for s in pycountry.subdivisions.get(country_code=country.upper())]:
+                flash("Enter valid state", 'danger')
+                return redirect("edit")
 
         
         if not country:
