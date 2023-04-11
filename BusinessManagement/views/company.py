@@ -5,6 +5,7 @@ company = Blueprint('company', __name__, url_prefix='/company')
 @company.route("/search", methods=["GET"])
 def search():
     rows = []
+    # UCID: sk3374@njit.edu || Date: 4/8/2023
     # DO NOT DELETE PROVIDED COMMENTS
     # TODO search-1 retrieve id, name, address, city, country, state, zip, website, employee count as employees for the company
     # don't do SELECT *
@@ -14,12 +15,7 @@ def search():
     allowed_columns = ["name", "city", "country", "state"]
     allowed_list = [(v, v) for v in allowed_columns]
     # TODO search-2 get name, country, state, column, order, limit request args
-    # TODO search-3 append a LIKE filter for name if provided
-    # TODO search-4 append an equality filter for country if provided
-    # TODO search-5 append an equality filter for state if provided
-    # TODO search-6 append sorting if column and order are provided and within the allows columsn and allowed order asc,desc
-    # TODO search-7 append limit (default 10) or limit greater than 1 and less than or equal to 100
-    # TODO search-8 provide a proper error message if limit isn't a number or if it's out of bounds
+    # UCID: sk3374@njit.edu || Date: 4/8/2023
     name = request.args.get("name")
     country = request.args.get("country")
     state = request.args.get("state")
@@ -27,6 +23,13 @@ def search():
     order = request.args.get("order")
     limit = request.args.get("limit")
 
+    # UCID: sk3374@njit.edu || Date: 4/8/2023
+    # TODO search-3 append a LIKE filter for name if provided
+    # TODO search-4 append an equality filter for country if provided
+    # TODO search-5 append an equality filter for state if provided
+    # TODO search-6 append sorting if column and order are provided and within the allows columsn and allowed order asc,desc
+    # TODO search-7 append limit (default 10) or limit greater than 1 and less than or equal to 100
+    # TODO search-8 provide a proper error message if limit isn't a number or if it's out of bounds
     if name:
         query += " AND name LIKE %s"
         args.append(f"%{name}%")
@@ -60,6 +63,7 @@ def search():
             print(f"rows {rows}")
     except Exception as e:
         # TODO search-9 make message user friendly
+        # UCID: sk3374@njit.edu || Date: 4/8/2023
         flash(f"There was an error processing your search. {str(e)}", "danger")
     # hint: use allowed_columns in template to generate sort dropdown
     # hint2: convert allowed_columns into a list of tuples representing (value, label)

@@ -16,7 +16,7 @@
     <form method="GET">
         <div class="row">
             <div class="col">
-                <input id="name" class="form-control" placeholder="name" name="name" type="text"value="{{ allowed_columns[0].value }}">
+                <input id="name" class="form-control" placeholder="name" name="name" type="text"value="{{request.args.get('name') or ''}}">
             </div>
             <!-- UCID: sk3374; Date: 04/08/23 -->
 
