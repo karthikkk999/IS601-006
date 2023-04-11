@@ -117,11 +117,10 @@ def add():
 
         if not state:
             flash("State is required", "danger")
-            has_error = True
-        
-        state_code = country + "-" + state
-        
-        state_name = pycountry.subdivisions.get(code=state_code).name
+            has_error = True        
+            state_code = country + "-" + state            
+            state_name = pycountry.subdivisions.get(code=state_code).name
+
         if state_name.lower() not in [s.name.lower() for s in pycountry.subdivisions.get(country_code=country.upper())]:
             flash("Enter valid state", 'danger')
             return redirect("edit")
@@ -129,13 +128,12 @@ def add():
         
         if not country:
             flash("Country is required", "danger")
-            has_error = True
-        
-        country_name = pycountry.countries.get(alpha_2=country)
-        if country_name is None:
-            flash("Enter valid country", 'danger')
-            return redirect("edit")
-        
+            has_error = True        
+            country_name = pycountry.countries.get(alpha_2=country)
+            if country_name is None:
+                flash("Enter valid country", 'danger')
+                return redirect("edit")
+            
             
         if not zipcode:
             flash("Zipcode is required", "danger")
@@ -210,21 +208,19 @@ def edit():
             if not state:
                 flash("State is required", "danger")
                 has_error = True
-
-            state_name = pycountry.subdivisions.get(code=state_code).name
-            
-            if state_name.lower() not in [s.name.lower() for s in pycountry.subdivisions.get(country_code=country.upper())]:
-                flash("Enter valid state", 'danger')
-                return redirect("edit")
+                state_code = country + "-" + state
+                state_name = pycountry.subdivisions.get(code=state_code).name                
+                if state_name.lower() not in [s.name.lower() for s in pycountry.subdivisions.get(country_code=country.upper())]:
+                    flash("Enter valid state", 'danger')
+                    return redirect("edit")
 
             if not country:
                 flash("Country is required", "danger")
                 has_error = True
-            country_name = pycountry.countries.get(alpha_2=country)
-            
-            if country_name is None:
-                flash("Enter valid country", 'danger')
-                return redirect("edit")
+                country_name = pycountry.countries.get(alpha_2=country)
+                if country_name is None:
+                    flash("Enter valid country", 'danger')
+                    return redirect("edit")
 
             if not zipcode:
                 flash("Zipcode is required", "danger")
