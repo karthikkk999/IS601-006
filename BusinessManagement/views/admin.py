@@ -18,9 +18,12 @@ def importCSV():
             flash('No selected file', "warning")
             return redirect(request.url)
         # TODO importcsv-1 check that it's a .csv file, return a proper flash message if it's not
-        # UCID: sk3374
-        # Time Added: 4/8/23 7:02 PM
+        # UCID: sk3374 || Date: 4/8/23
         # added an another condition to the below if which checks for the file extension ".csv"
+        if not file.filename.endswith('.csv'):
+            flash('Invalid file. Please upload a ''.csv'' file', 'warning')
+            return redirect(request.url)
+
         if file and secure_filename(file.filename) and file.filename.endswith('.csv'):
             companies = []
             employees = []
@@ -46,19 +49,21 @@ def importCSV():
             """
             # Note: this reads the file as a stream instead of requiring us to save it
             # TODO importcsv-2 read the csv file stream as a dict
+            # UCID: sk3374 || Date: 4/8/23
             stream = io.TextIOWrapper(file.stream._file, "UTF8", newline=None)
-
+            
             csv_reader = csv.DictReader(stream, delimiter=',')
 
             for row in csv_reader:
                 print(row)
                 # TODO importcsv-3 extract company data and append to company list 
                 # as a dict only with company data if all is present
+                # UCID: sk3374 || Date: 4/8/23
                 if row["company_name"] and row["address"] and row["city"] and row["state"] and row["zip"] and row["web"] and row["country"]:
                    companies.append({"name" : row["company_name"],  "address" :  row["address"], "city" : row["city"], "state" : row["state"], "country" : row["country"],
                     "zip": row["zip"], "website" : row["web"]})
 
-
+                # UCID: sk3374 || Date: 4/8/23
                 # TODO importcsv-4 extract employee data and append to employee list 
                 # as a dict only with employee data if all is present                   
                 if row["first_name"] and row["last_name"] and row["email"] and row["company_name"]:
@@ -70,12 +75,14 @@ def importCSV():
                 try:
                     result = DB.insertMany(company_query, companies)
                     # TODO importcsv-5 display flash message about number of companies inserted
+                    # UCID: sk3374 || Date: 4/8/23
                     flash(f"{len(companies)} companies inserted or updated", "success")
                 except Exception as e:
                     traceback.print_exc()
                     flash("There was an error loading in the csv data", "danger")
             else:
                 # TODO importcsv-6 display flash message (info) that no companies were loaded
+                # UCID: sk3374 || Date: 4/8/23
                 flash("No companies were loaded", "info")
                 #pass
 
@@ -84,12 +91,14 @@ def importCSV():
                 try:
                     result = DB.insertMany(employee_query, employees)
                     # TODO importcsv-7 display flash message about number of employees loaded
+                    # UCID: sk3374 || Date: 4/8/23
                     flash(f"{len(employees)} employees inserted or updated", "success")
                 except Exception as e:
                     traceback.print_exc()
                     flash("There was an error loading in the csv data", "danger")
             else:
                  # TODO importcsv-8 display flash message (info) that no employees were loaded
+                 # UCID: sk3374 || Date: 4/8/23
                 flash("No employees were loaded", "info")
                 #pass
             try:
