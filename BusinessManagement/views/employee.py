@@ -226,6 +226,7 @@ def edit():
 
 @employee.route("/delete", methods=["GET"])
 def delete():
+    # UCID: sk3374@njit.edu || Date: 4/9/2023
     # TODO delete-1 delete employee by id
     # TODO delete-2 redirect to employee search
     # TODO delete-3 pass all argument except id to this route

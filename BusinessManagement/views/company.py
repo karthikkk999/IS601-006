@@ -1,6 +1,7 @@
 from flask import Blueprint, redirect, render_template, request, flash, url_for
 from sql.db import DB
 company = Blueprint('company', __name__, url_prefix='/company')
+import pycountry
 
 @company.route("/search", methods=["GET"])
 def search():
@@ -117,10 +118,24 @@ def add():
         if not state:
             flash("State is required", "danger")
             has_error = True
+        
+        state_code = country + "-" + state
+        
+        state_name = pycountry.subdivisions.get(code=state_code).name
+        if state_name.lower() not in [s.name.lower() for s in pycountry.subdivisions.get(country_code=country.upper())]:
+            flash("Enter valid state", 'danger')
+            return redirect("edit")
 
+        
         if not country:
             flash("Country is required", "danger")
             has_error = True
+        
+        country_name = pycountry.countries.get(alpha_2=country)
+        if country_name is None:
+            flash("Enter valid country", 'danger')
+            return redirect("edit")
+        
             
         if not zipcode:
             flash("Zipcode is required", "danger")
@@ -145,6 +160,7 @@ def add():
 @company.route("/edit", methods=["GET", "POST"])
 def edit():
     # TODO edit-1 request args id is required (flash proper error message)
+    # UCID: sk3374@njit.edu || Date: 4/8/2023
     id = id = request.args.get("id")
 
     if not id: # TODO update this for TODO edit-1
@@ -154,6 +170,16 @@ def edit():
         if request.method == "POST":
             data = {"id": id} # use this as needed, can convert to tuple if necessary
             # TODO edit-1 retrieve form data for name, address, city, state, country, zip, website
+            # UCID: sk3374@njit.edu || Date: 4/8/2023
+            name = request.form.get("name")
+            address = request.form.get("address")
+            city = request.form.get("city")
+            state = request.form.get("state")
+            country = request.form.get("country")
+            zipcode = request.form.get("zip")
+            website = request.form.get("website") or ''
+
+            has_error = False # use this to control whether or not an insert occurs
             # TODO edit-2 name is required (flash proper error message)
             # TODO edit-3 address is required (flash proper error message)
             # TODO edit-4 city is required (flash proper error message)
@@ -165,19 +191,9 @@ def edit():
             # hint see geography.py and pycountry documentation
             # TODO edit-7 website is not required
             # TODO edit-8 zipcode is required (flash proper error message)
-            
+            # UCID: sk3374@njit.edu || Date: 4/8/2023
             # note: call zip variable zipcode as zip is a built in function it could lead to issues
             # populate data dict with mappings
-
-            name = request.form.get("name")
-            address = request.form.get("address")
-            city = request.form.get("city")
-            state = request.form.get("state")
-            country = request.form.get("country")
-            zipcode = request.form.get("zip")
-            website = request.form.get("website") or ''
-
-            has_error = False # use this to control whether or not an insert occurs
 
             if not name:
                 flash("Name is required", "danger")
@@ -195,9 +211,20 @@ def edit():
                 flash("State is required", "danger")
                 has_error = True
 
+            state_name = pycountry.subdivisions.get(code=state_code).name
+            
+            if state_name.lower() not in [s.name.lower() for s in pycountry.subdivisions.get(country_code=country.upper())]:
+                flash("Enter valid state", 'danger')
+                return redirect("edit")
+
             if not country:
                 flash("Country is required", "danger")
                 has_error = True
+            country_name = pycountry.countries.get(alpha_2=country)
+            
+            if country_name is None:
+                flash("Enter valid country", 'danger')
+                return redirect("edit")
 
             if not zipcode:
                 flash("Zipcode is required", "danger")
@@ -205,6 +232,7 @@ def edit():
             
             if not has_error:
                 try:
+                    # UCID: sk3374@njit.edu || Date: 4/8/2023
                     # TODO edit-9 fill in proper update query
                     # name, address, city, state, country, zip, website
 
@@ -217,21 +245,26 @@ def edit():
                         flash("Updated record", "success")
                 except Exception as e:
                     # TODO edit-10 make this user-friendly
+                    # UCID: sk3374@njit.edu || Date: 4/8/2023
                     flash(f"There was an error updating the company. {str(e)}", "danger")
     row = {}
     try:
         # TODO edit-11 fetch the updated data
+        # UCID: sk3374@njit.edu || Date: 4/8/2023
         result = DB.selectOne("SELECT name, address, city, country, state, zip, website FROM IS601_MP3_Companies WHERE id = %s", (id,))
         if result.status:
             row = result.row
             
     except Exception as e:
         # TODO edit-12 make this user-friendly
+        # UCID: sk3374@njit.edu || Date: 4/8/2023
         flash(f"There was an error fetching the company data. {str(e)}", "danger")
     # TODO edit-13 pass the company data to the render template
+    # UCID: sk3374@njit.edu || Date: 4/8/2023
     return render_template("edit_company.html", company=row)
 
 @company.route("/delete", methods=["GET"])
+    # UCID:sk3374@njit.edu || Date: 4/9/2023
     # TODO delete-1 delete company by id (unallocate any employees see delete-5)
     # TODO delete-2 redirect to company search
     # TODO delete-3 pass all argument except id to this route
