@@ -72,7 +72,20 @@ def search():
 @company.route("/add", methods=["GET","POST"])
 def add():
     if request.method == "POST":
+        # note: call zip variable zipcode as zip is a built in function it could lead to issues
         # TODO add-1 retrieve form data for name, address, city, state, country, zip, website
+        # UCID: sk3374@njit.edu || Date: 4/8/2023
+        name = request.form.get("name")
+        address = request.form.get("address")
+        city = request.form.get("city")
+        state = request.form.get("state")
+        country = request.form.get("country")
+        zipcode = request.form.get("zip")
+        website = request.form.get("website")
+
+        has_error = False # use this to control whether or not an insert occurs
+        
+        # UCID: sk3374@njit.edu || Date: 4/8/2023
         # TODO add-2 name is required (flash proper error message)
         # TODO add-3 address is required (flash proper error message)
         # TODO add-4 city is required (flash proper error message)
@@ -84,16 +97,6 @@ def add():
         # hint see geography.py and pycountry documentation
         # TODO add-7 website is not required
         # TODO add-8 zipcode is required (flash proper error message)
-        # note: call zip variable zipcode as zip is a built in function it could lead to issues
-        name = request.form.get("name")
-        address = request.form.get("address")
-        city = request.form.get("city")
-        state = request.form.get("state")
-        country = request.form.get("country")
-        zipcode = request.form.get("zip")
-        website = request.form.get("website")
-
-        has_error = False # use this to control whether or not an insert occurs
         
         if not name:
             flash("Name is required", "danger")
@@ -122,6 +125,7 @@ def add():
 
         if not has_error:
             try:
+                # UCID: sk3374@njit.edu || Date: 4/8/2023
                 result = DB.insertOne("""
                 INSERT INTO IS601_MP3_Companies
                 (name, address, city, country, state, zip, website) VALUES(%s, %s, %s, %s, %s, %s, %s)

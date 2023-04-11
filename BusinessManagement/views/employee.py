@@ -146,6 +146,7 @@ def add():
 @employee.route("/edit", methods=["GET", "POST"])
 def edit():
     # TODO edit-1 request args id is required (flash proper error message)
+    #UCID: sk3374@njit.edu || Date: 4/8/2023
     id = request.args.get("id")
     if not id: # TODO update this for TODO edit-1
         flash("Employee ID is required.", "danger")
@@ -153,25 +154,24 @@ def edit():
     else:
         if request.method == "POST":
             
-            # TODO edit-1 retrieve form data for first_name, last_name, company, email
-            # TODO edit-2 first_name is required (flash proper error message)
-            # TODO edit-3 last_name is required (flash proper error message)
-            # TODO edit-4 company (may be None)
-            # TODO edit-5 email is required (flash proper error message)
-            # TODO edit-5a verify email is in the correct format
             has_error = False # use this to control whether or not an insert occurs
+            
+            # TODO edit-1 retrieve form data for first_name, last_name, company, email
+            #UCID: sk3374@njit.edu || Date: 4/8/2023
             first_name = str(request.form.get("first_name"))
             last_name = str(request.form.get("last_name"))
             company = request.form.get("company")
             email = str(request.form.get("email"))
             
             # TODO edit-2 first_name is required (flash proper error message)
+            #UCID: sk3374@njit.edu || Date: 4/8/2023
             if not first_name:
                 flash("First name is required.", "danger")
                 has_error = True
                 return redirect("add")
 
             # TODO edit-3 last_name is required (flash proper error message)
+            #UCID: sk3374@njit.edu || Date: 4/8/2023
             if not last_name:
                 flash("Last name is required.", "danger")
                 has_error = True
@@ -179,14 +179,17 @@ def edit():
 
             # TODO edit-4 company (may be None)
             # company variable is already retrieved
+            #UCID: sk3374@njit.edu || Date: 4/8/2023
             if not company:
                 company = None
 
             # TODO edit-5 email is required (flash proper error message)
+            #UCID: sk3374@njit.edu || Date: 4/8/2023
             if not email:
                 flash("Email is required.", "danger")
                 has_error = True
             # TODO edit-5a verify email is in the correct format
+            #UCID: sk3374@njit.edu || Date: 4/8/2023
             elif not is_valid_email(email):
                 flash("Invalid email format.", "danger")
                 has_error = True
@@ -194,6 +197,7 @@ def edit():
             if not has_error:
                 try:
                     # TODO edit-6 fill in proper update query
+                    #UCID: sk3374@njit.edu || Date: 4/8/2023
                     result =  DB.update("""
                     UPDATE IS601_MP3_Employees SET first_name = %s, last_name = %s, company_id = %s, email = %s WHERE id = %s
                     """,first_name,last_name,company, email, id)
@@ -201,10 +205,12 @@ def edit():
                         flash("Updated record", "success")
                 except Exception as e:
                     # TODO edit-7 make this user-friendly
+                    #UCID: sk3374@njit.edu || Date: 4/8/2023
                     flash("An error occurred while updating the employee.", "danger")
         row = {}
         try:
             # TODO edit-8 fetch the updated data 
+            
             result = DB.selectOne("""
             SELECT e.id as id, e.first_name, e.last_name, e.email, c.id as company_id, c.name as company_name
             FROM IS601_MP3_Employees e LEFT JOIN IS601_MP3_Companies c ON e.company_id = c.id
