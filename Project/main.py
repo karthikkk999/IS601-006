@@ -28,6 +28,7 @@ def create_app(config_filename=''):
     app.register_error_handler(404, page_not_found)
     app.register_error_handler(403, permission_denied)
     app.secret_key = os.environ.get("SECRET_KEY", "missing_secret")
+    app.secret_key
     login_manager.init_app(app)
     # app.config.from_pyfile(config_filename)
     with app.app_context():
@@ -81,11 +82,7 @@ def create_app(config_filename=''):
                     identity.provides.add(RoleNeed(role.name))
         return app
 
-
-
-
 app = create_app()
-
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
