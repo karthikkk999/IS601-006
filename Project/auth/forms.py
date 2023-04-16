@@ -5,15 +5,15 @@ from wtforms.validators import DataRequired, Email, InputRequired, EqualTo, Leng
 class RegisterForm(FlaskForm):
     username = StringField("username", validators=[DataRequired(), Length(2, 30)])
     email = EmailField("email", validators=[DataRequired(), Email()])
-    # password = PasswordField("password", validators=[InputRequired(), EqualTo('confirm', message='Passwords must match')])
-    confirm = PasswordField("confirm", validators=[DataRequired()])
+    # confirm = PasswordField("confirm", validators=[DataRequired()])
     submit = SubmitField("Register")
     password = PasswordField("password", 
                              validators=[InputRequired(), 
                                          Length(min=8), 
-                                         EqualTo('confirm', message='Passwords must match'),
                                          Regexp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$', 
                                         message='Password must contain at least one uppercase letter, one lowercase letter and one digit')])
+    confirm = PasswordField("confirm", validators=[InputRequired(), EqualTo('password', message='Passwords must match')])
+
 
 
 class LoginForm(FlaskForm):
