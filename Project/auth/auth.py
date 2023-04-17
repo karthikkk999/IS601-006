@@ -130,18 +130,19 @@ def profile():
         email = form.email.data
         username = form.username.data
         import re
-        r = re.fullmatch("/^[a-z0-9_-]{2,30}$/", username)
-        if r:
+        r = re.fullmatch('^[a-z0-9_-]{2,30}$', username)
+        if r is None:
             is_valid = False
             flash("Invalid username", "danger")
+        print(r)
         current_password = form.current_password.data
         password = form.password.data
         confirm = form.confirm.data
-        print('username:',username)
-        print('email:', email)
-        print('current_password:',current_password)
-        print('password:',password)
-        print('confirm:',confirm)
+        # print('username:',username)
+        # print('email:', email)
+        # print('current_password:',current_password)
+        # print('password:',password)
+        # print('confirm:',confirm)
         
         # handle password change only if all 3 are provided
         if current_password and password and confirm:
