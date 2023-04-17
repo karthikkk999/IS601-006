@@ -146,6 +146,7 @@ def profile():
         # handle password change only if all 3 are provided
         if current_password and password and confirm:
             if password != confirm:
+                is_valid = False
                 flash("Passwords do not match", "danger")
             else:
                 try:
