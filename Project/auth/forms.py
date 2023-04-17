@@ -26,10 +26,11 @@ class ProfileForm(FlaskForm):
     current_password = PasswordField("current password", validators=[Optional()])
     #password = PasswordField("password", validators=[Optional(), EqualTo('confirm', message='Passwords must match')])
     #confirm = PasswordField("confirm", validators=[Optional(), EqualTo("password")])
-    submit = SubmitField("Update")
     password = PasswordField("password", 
                              validators=[Optional(), 
                                          Length(min=8), 
                                          Regexp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$', 
                                         message='Password must contain at least one uppercase letter, one lowercase letter and one digit')])
     confirm = PasswordField("confirm", validators=[Optional(), EqualTo('password', message='Passwords must match')])
+    submit = SubmitField("Update")
+    

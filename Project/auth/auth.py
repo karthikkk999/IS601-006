@@ -130,6 +130,8 @@ def profile():
         confirm = form.confirm.data
         # handle password change only if all 3 are provided
         if current_password and password and confirm:
+            if password != current_password:
+                flash("Passwords doesnot match", "danger")
             try:
                 result = DB.selectOne("SELECT password FROM IS601_Users where id = %s", user_id)
                 if result.status and result.row:
