@@ -147,23 +147,24 @@ def profile():
         if current_password and password and confirm:
             if password != confirm:
                 flash("Passwords do not match", "danger")
-            try:
-                result = DB.selectOne("SELECT password FROM IS601_Users where id = %s", user_id)
-                if result.status and result.row:
-                    # verify current password
-                    if bcrypt.check_password_hash(result.row["password"], current_password):
-                        # update new password
-                        hash = bcrypt.generate_password_hash(password)
-                        try:
-                            result = DB.update("UPDATE IS601_Users SET password = %s WHERE id = %s", hash, user_id)
-                            if result.status:
-                                flash("Updated password", "success")
-                        except Exception as ue:
-                            flash(ue, "danger")
-                    else:
-                        flash("Invalid password","danger")
-            except Exception as se:
-                flash(se, "danger")
+            else:
+                try:
+                    result = DB.selectOne("SELECT password FROM IS601_Users where id = %s", user_id)
+                    if result.status and result.row:
+                        # verify current password
+                        if bcrypt.check_password_hash(result.row["password"], current_password):
+                            # update new password
+                            hash = bcrypt.generate_password_hash(password)
+                            try:
+                                result = DB.update("UPDATE IS601_Users SET password = %s WHERE id = %s", hash, user_id)
+                                if result.status:
+                                    flash("Updated password", "success")
+                            except Exception as ue:
+                                flash(ue, "danger")
+                        else:
+                            flash("Invalid password","danger")
+                except Exception as se:
+                    flash(se, "danger")
         
         if is_valid:
             try: # update email, username (this will trigger if nothing changed but it's fine)
