@@ -128,10 +128,17 @@ def profile():
         current_password = form.current_password.data
         password = form.password.data
         confirm = form.confirm.data
+        print('username:',username)
+        print('email:', email)
+        print('current_password:',current_password)
+        print('password:',password)
+        print('confirm:',confirm)
+        print('confirm:',bcrypt.generate_password_hash(confirm))
+        
         # handle password change only if all 3 are provided
         if current_password and password and confirm:
-            if password != current_password:
-                flash("Passwords doesnot match", "danger")
+            if password != confirm:
+                flash("Passwords do not match", "danger")
             try:
                 result = DB.selectOne("SELECT password FROM IS601_Users where id = %s", user_id)
                 if result.status and result.row:
