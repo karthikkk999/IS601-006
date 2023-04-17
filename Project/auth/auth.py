@@ -142,7 +142,6 @@ def profile():
         print('current_password:',current_password)
         print('password:',password)
         print('confirm:',confirm)
-        print('confirm:',bcrypt.generate_password_hash(confirm))
         
         # handle password change only if all 3 are provided
         if current_password and password and confirm:
