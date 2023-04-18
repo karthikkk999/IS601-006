@@ -6,7 +6,8 @@ name: Deploy to heroku prod.
 on:
   push:
     branches:
-      - prod
+      # - prod
+      - Milestone1
 
 # Your workflows jobs.
 jobs:
@@ -16,7 +17,7 @@ jobs:
       DB_URL: ${{secrets.DB_URL}}
       PORT: 8080
       # change to the project directory you're deploying
-      WORKING_DIRECTORY: flask_sample
+      WORKING_DIRECTORY: Project
     defaults:
       run:
           working-directory: ${{env.WORKING_DIRECTORY}}
@@ -63,7 +64,7 @@ jobs:
           # (Optional, default: "web")
           # Select the process type for which you want the docker container to be uploaded.
           # By default, this argument is set to "web".
-          # For more information look at https://devcenter.heroku.com/articles/process-model
+          # For more information look at https://prodcenter.heroku.com/articles/process-model
           process_type: web
           
    
