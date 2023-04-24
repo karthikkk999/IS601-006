@@ -11,13 +11,11 @@
             <input class="form-control" type="text" id="name" name="name" placeholder="Name" value="{{request.args.get('name') or ''}}">
         </div>
         <div class="col-12">
-            {% set options = ["Clothing", "Food", "Home", "Electronics"] %}
             <label class="form-label" for="category">Category</label>
             <select class="form-select" id="category" name="category" value="{{request.args.get('category')}}">
                 <option value="">Choose...</option>
-                {% for op in options %}
-                {# using an inline if to output the selected attribute if it matches the op #}
-                <option {{'selected' if request.args.get('category')==op }} value="{{op}}">{{op|capitalize}}</option>
+                    {% for category in categories %}
+                    <option value="{{ category }}">{{ category|capitalize }}</option>
                 {% endfor %}
             </select>
         </div>

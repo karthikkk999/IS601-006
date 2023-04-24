@@ -75,11 +75,12 @@ def items():
 def shop_list():
     rows = []
     args = []
+    categories = []
     ##UCID: sk3374 Date Dec 17th
     name = request.args.get("name")
     category = request.args.get("category")
     price = request.args.get("price")
-    query = "SELECT id, name, description, stock, unit_price FROM IS601_S_Products WHERE stock > 0 AND visibility = 1"
+    query = "SELECT id, name, description, stock, unit_price, category FROM IS601_S_Products WHERE stock > 0 AND visibility = 1"
     if name:
         query += " AND name LIKE %s"
         args.append(f"%{name}%")
@@ -92,10 +93,11 @@ def shop_list():
         result = DB.selectAll(query, *args)
         if result.status and result.rows:
             rows = result.rows
+            categories = list(set([row['category'] for row in rows]))
     except Exception as e:
         print("Error fetching items", e)
         flash("There was a problem loading items", "danger")
-    return render_template("shop.html", rows=rows)
+    return render_template("shop.html", rows=rows, categories = categories)
 
 @shop.route("/cart", methods=["GET","POST"])
 def cart():
