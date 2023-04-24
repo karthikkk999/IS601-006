@@ -76,7 +76,8 @@ def shop_list():
     rows = []
     args = []
     all_categories = []
-    ##UCID: sk3374 Date Dec 17th
+    #UCID: sk3374
+    #Date: 4/23/23
     name = request.args.get("name")
     category = request.args.get("category")
     price = request.args.get("price")
