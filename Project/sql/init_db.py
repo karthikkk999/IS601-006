@@ -1,6 +1,8 @@
 import glob
 import os
 
+
+
 from db import DB
 print(os.path.dirname(os.path.abspath(__file__)))
 mypath = os.path.dirname(os.path.abspath(__file__))
@@ -39,9 +41,9 @@ for q in queries:
             print(f"Table {t} already exists, blocking query")
             continue
     try:
-        result = DB.query(sql)
+        success = DB.query(sql)
         db_calls += 1
-        print(f"Ran {'successfully' if result.status else 'unsuccessfully'}")
+        print(f"Ran {'successfully' if success.status else 'unsuccessfully'}")
     except Exception as e:
         print("An error occured (some may be expected)", e)
 if queries is None:
