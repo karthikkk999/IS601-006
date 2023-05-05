@@ -129,12 +129,6 @@ def profile():
         is_valid = True
         email = form.email.data
         username = form.username.data
-        import re
-        r = re.fullmatch('^[a-z0-9_-]{2,30}$', username)
-        if r is None:
-            is_valid = False
-            flash("Invalid username", "danger")
-        print(r)
         current_password = form.current_password.data
         password = form.password.data
         confirm = form.confirm.data
