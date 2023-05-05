@@ -6,7 +6,8 @@ name: Deploy to heroku dev.
 on:
   push:
     branches:
-      - dev
+      #- dev
+      - Milestone3
       #- Milestone1
       #- Milestone2
 
