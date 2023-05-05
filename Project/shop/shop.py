@@ -191,7 +191,8 @@ def purchase():
         DB.getDB().autocommit = False # make a transaction
 
         # get cart to verify
-        ## UCID: sk3374, Date: Dec 21
+        # UCID: sk3374 
+        # Date: 5/1
         result = DB.selectAll("""SELECT c.id, product_id, name, c.desired_quantity, i.stock, c.unit_price as cart_cost, i.unit_price as item_cost, (c.desired_quantity * c.unit_price) as subtotal 
         FROM IS601_S_Cart c JOIN IS601_S_Products i on c.product_id = i.id
         WHERE c.user_id = %s
@@ -202,11 +203,11 @@ def purchase():
         has_error = False
         for item in cart:
             if item["desired_quantity"] > item["stock"]:
-                flash(f"Item {item['name']} doesn't have enough stock left", "warning")
+                flash(f"Item {item['name']} ran out of stock", "warning")
                 has_error = True
             print(item['cart_cost'], item["item_cost"])
             if item["cart_cost"] != item["item_cost"]:
-                flash(f"Item {item['name']}'s price has changed, please refresh cart", "warning")
+                flash(f"Item {item['name']}'s price has updated, please refresh your cart", "warning")
                 has_error = True
             total += int(item["subtotal"] or 0)
             quantity += int(item["desired_quantity"])
@@ -214,12 +215,13 @@ def purchase():
         if not has_error:
             balance = float(request.form.get('amount'))
             if total > balance:
-                flash("You can't afford to make this purchase", "danger")
+                flash("You have insufficient funds for the purchase", "danger")
                 has_error = True
         # create order data
         order_id = -1
         if not has_error:
-            ##UCID: sk3374, Date: Dec21
+            #UCID: sk3374
+            #Date: 5/1
             address = request.form.get('apt') + "," + request.form.get('city') + "," + request.form.get('state') + "," + request.form.get('country') + "," + request.form.get('zpcode')
             payment_method = request.form.get('paymentmethod')
             money_received = request.form.get('amount')
@@ -253,7 +255,8 @@ def purchase():
                 DB.getDB().rollback()
         # update stock based on cart data
         if not has_error:
-            ##UCID: sk3374, Date: Dec 21
+            #UCID: sk3374
+            #Date: 5/1
             result = DB.update("""
             UPDATE IS601_S_Products 
                 set stock = stock - (select IFNULL(desired_quantity, 0) FROM IS601_S_Cart WHERE product_id = IS601_S_Products.id and user_id = %(uid)s) 
